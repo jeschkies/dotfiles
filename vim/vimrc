@@ -2,9 +2,9 @@ set nocompatible
 filetype off
 
 " Vundle
-set rtp+=~/.vim/bundle/vundle
-call vundle#rc('~/.vim/bundle')
-Plugin 'gmarik/vundle'
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim'
 
 " My Plugins
 Plugin 'tpope/vim-fugitive'
@@ -18,6 +18,8 @@ Plugin 'kchmck/vim-coffee-script'
 Plugin 'ervandew/supertab'
 Plugin 'terryma/vim-multiple-cursors'
    
+call vundle#end()
+
 set autoindent
 
 " Spaces for tab indents
