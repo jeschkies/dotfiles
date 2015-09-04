@@ -1,0 +1,58 @@
+set nocompatible
+filetype off
+
+" Vundle
+set rtp+=~/.vim/bundle/vundle
+call vundle#rc('~/.vim/bundle')
+Bundle 'gmarik/vundle'
+
+" My Bundles
+Bundle 'tpope/vim-fugitive'
+Bundle 'bling/vim-airline'
+Bundle 'derekwyatt/vim-scala'
+Bundle 'plasticboy/vim-markdown'
+Bundle 'tpope/vim-surround'
+Bundle 'kien/ctrlp.vim'
+Bundle 'fisadev/vim-ctrlp-cmdpalette'
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'ervandew/supertab'
+Bundle 'terryma/vim-multiple-cursors'
+   
+set autoindent
+
+" Spaces for tab indents
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+" 80 characters margin and line numbers
+set colorcolumn=80
+set number
+
+" Fix Backspace
+set backspace=indent,eol,start
+
+" Encoding
+set encoding=utf-8
+setglobal fileencoding=utf-8
+
+" Tab navigation
+nnoremap <S-l> :tabnext<CR>
+nnoremap <S-h> :tabprev<CR>
+
+" airline
+set t_Co=256
+set laststatus=2
+
+" Theme
+" colors morning
+colors summerfruit256
+
+" multiple-cursor
+let g:multi_cursor_next_key='<C-n>'
+let g:multi_cursor_prev_key='<C-p>'
+let g:multi_cursor_skip_key='<C-x>'
+let g:multi_cursor_quit_key='<Esc>'
+
+syntax on
+filetype plugin indent on
