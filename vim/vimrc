@@ -4,19 +4,19 @@ filetype off
 " Vundle
 set rtp+=~/.vim/bundle/vundle
 call vundle#rc('~/.vim/bundle')
-Bundle 'gmarik/vundle'
+Plugin 'gmarik/vundle'
 
-" My Bundles
-Bundle 'tpope/vim-fugitive'
-Bundle 'bling/vim-airline'
-Bundle 'derekwyatt/vim-scala'
-Bundle 'plasticboy/vim-markdown'
-Bundle 'tpope/vim-surround'
-Bundle 'kien/ctrlp.vim'
-Bundle 'fisadev/vim-ctrlp-cmdpalette'
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'ervandew/supertab'
-Bundle 'terryma/vim-multiple-cursors'
+" My Plugins
+Plugin 'tpope/vim-fugitive'
+Plugin 'bling/vim-airline'
+Plugin 'derekwyatt/vim-scala'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'tpope/vim-surround'
+Plugin 'kien/ctrlp.vim'
+Plugin 'fisadev/vim-ctrlp-cmdpalette'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'ervandew/supertab'
+Plugin 'terryma/vim-multiple-cursors'
    
 set autoindent
 
