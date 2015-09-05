@@ -15,6 +15,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'kien/ctrlp.vim'
 Plugin 'fisadev/vim-ctrlp-cmdpalette'
 Plugin 'kchmck/vim-coffee-script'
+Plugin 'ntpeters/vim-better-whitespace'
 Plugin 'ervandew/supertab'
 Plugin 'terryma/vim-multiple-cursors'
    
