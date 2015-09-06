@@ -28,6 +28,8 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 
+autocmd FileType ruby setlocal shiftwidth=2 tabstop=2
+
 " 80 characters margin and line numbers
 set colorcolumn=80
 set number
