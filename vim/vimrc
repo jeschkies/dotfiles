@@ -33,6 +33,7 @@ autocmd FileType ruby setlocal shiftwidth=2 tabstop=2
 " 80 characters margin and line numbers
 set colorcolumn=80
 set number
+set showbreak=⇇
 
 " Fix Backspace
 set backspace=indent,eol,start
