@@ -18,10 +18,14 @@ Plugin 'kchmck/vim-coffee-script'
 Plugin 'ntpeters/vim-better-whitespace'
 Plugin 'ervandew/supertab'
 Plugin 'terryma/vim-multiple-cursors'
-   
+
 call vundle#end()
 
 set autoindent
+
+" Redefine leader
+let mapleader="<"
+set showcmd
 
 " Spaces for tab indents
 set tabstop=4
@@ -42,13 +46,16 @@ set backspace=indent,eol,start
 set encoding=utf-8
 setglobal fileencoding=utf-8
 
-" Tab navigation
-nnoremap <S-l> :tabnext<CR>
-nnoremap <S-h> :tabprev<CR>
+" Navigation
+set hidden
+nmap <leader>l :bnext<CR>
+nmap <leader>h :bprevious<CR>
 
 " airline
 set t_Co=256
 set laststatus=2
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
 
 " Theme
 " colors morning
