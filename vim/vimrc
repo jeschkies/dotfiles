@@ -51,6 +51,10 @@ set hidden
 nmap <leader>l :bnext<CR>
 nmap <leader>h :bprevious<CR>
 
+" CtrlP
+" Use .git etc. as root.
+let g:ctrlp_working_path_mode = 'ra'
+
 " airline
 set t_Co=256
 set laststatus=2
