@@ -50,6 +50,7 @@ setglobal fileencoding=utf-8
 set hidden
 nmap <leader>l :bnext<CR>
 nmap <leader>h :bprevious<CR>
+nmap <leader>p :CtrlP<CR>
 
 " CtrlP
 " Use .git etc. as root.
