@@ -6,4 +6,4 @@ brew install caskroom/cask/brew-cask
 
 # Install vim
 ln -sf ~/.dotfiles/vim/colors ~/.vim/colors
-ln -sf ~/.dotfiles/vim/vimrc .vimrc
+ln -sf ~/.dotfiles/vim/vimrc ~/.vimrc
