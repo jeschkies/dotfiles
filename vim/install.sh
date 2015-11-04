@@ -18,4 +18,4 @@ ln -s $ZSH/vim/colors $HOME/.vim/colors
 git clone https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
 
 # Install plugins
-# vim +PluginInstall +qall
+vim +PluginInstall +qall
