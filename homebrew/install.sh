@@ -29,7 +29,7 @@ if test "$(uname)" = "Darwin"
 then
   brew install caskroom/cask/brew-cask
 
-  brew cask install google-chrome spotify
+  brew cask install google-chrome spotify telegram
 fi
 
 exit 0
