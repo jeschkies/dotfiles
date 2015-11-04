@@ -22,6 +22,14 @@ then
 fi
 
 # Install homebrew packages
-brew install grc coreutils spark
+brew install grc coreutils 
+
+# Install homebrew cask and OS X apps
+if test "$(uname)" = "Darwin"
+then
+  brew install caskroom/cask/brew-cask
+
+  brew cask install google-chrome spotify
+fi
 
 exit 0
