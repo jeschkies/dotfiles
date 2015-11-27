@@ -22,7 +22,7 @@ then
 fi
 
 # Install homebrew packages
-brew install grc coreutils pandoc wget
+brew install grc coreutils pandoc sbt scala wget
 
 # Install homebrew cask and OS X apps
 if test "$(uname)" = "Darwin"
