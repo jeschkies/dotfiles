@@ -2,10 +2,10 @@
 #
 # Nix
 #
-export ZSH=$HOME/.dotfiles
+#export ZSH=$HOME/.dotfiles
 
 # Install Nix
-$ZSH/nix/nix-install
+#$ZSH/nix/nix-install
 
 # Add to env
-cp $HOME/.nix-profile/etc/profile.d/nix.sh $ZSH/nix/nix.zsh
+#cp $HOME/.nix-profile/etc/profile.d/nix.sh $ZSH/nix/nix.zsh
