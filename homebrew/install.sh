@@ -22,7 +22,7 @@ then
 fi
 
 # Install homebrew packages
-brew install grc coreutils pandoc pyenv sbt scala tmux wget
+brew install grc coreutils pandoc sbt scala tmux wget
 
 # Install homebrew cask and OS X apps
 if test "$(uname)" = "Darwin"
