@@ -5,9 +5,6 @@
 # This installs Vundle for vim and all plugins.
 export ZSH=$HOME/.dotfiles
 
-# Update vim
-brew install vim
-
 # Create .vim
 mkdir -p $HOME/.vim
 
