@@ -25,7 +25,7 @@ call vundle#end()
 set autoindent
 
 " Redefine leader
-let mapleader="<"
+let mapleader=","
 set showcmd
 
 " Spaces for tab indents
