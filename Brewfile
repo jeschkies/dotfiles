@@ -18,6 +18,7 @@ brew 'vim'
 brew 'wget'
 brew 'youtube-dl'
 
+cask 'dockertoolbox'
 cask 'firefox'
 cask 'google-chrome'
 cask 'iterm2'
