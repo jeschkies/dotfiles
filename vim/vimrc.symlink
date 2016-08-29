@@ -57,6 +57,8 @@ nmap <leader>p :CtrlP<CR>
 " CtrlP
 " Use .git etc. as root.
 let g:ctrlp_working_path_mode = 'ra'
+" Ignore build folders etc.
+let g:ctrlp_custom_ignore = '\v[\/](node_modules|target|dist)|(\.(swp|ico|git|svn))$'
 
 " airline
 set t_Co=256
