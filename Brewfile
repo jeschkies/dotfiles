@@ -23,7 +23,6 @@ brew 'vim'
 brew 'wget'
 brew 'youtube-dl'
 
-cask 'docker-toolbox'
 cask 'firefox'
 cask 'google-chrome'
 cask 'intellij-idea'
