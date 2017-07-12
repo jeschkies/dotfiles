@@ -19,6 +19,7 @@ Plugin 'kchmck/vim-coffee-script'
 Plugin 'ntpeters/vim-better-whitespace'
 Plugin 'ervandew/supertab'
 Plugin 'terryma/vim-multiple-cursors'
+Plugin 'rust-lang/rust.vim'
 
 call vundle#end()
 
