@@ -9,6 +9,7 @@ Plugin 'VundleVim/Vundle.vim'
 " My Plugins
 Plugin 'tpope/vim-fugitive'
 Plugin 'bling/vim-airline'
+Plugin 'cespare/vim-toml'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'plasticboy/vim-markdown'
