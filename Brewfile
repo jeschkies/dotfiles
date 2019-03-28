@@ -4,6 +4,7 @@ tap 'homebrew/bundle'
 
 brew 'cmake'
 brew 'coreutils'
+brew 'direnv'
 brew 'fzf'
 brew 'libgit2'
 brew 'md5sha1sum'

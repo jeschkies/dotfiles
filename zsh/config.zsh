@@ -47,7 +47,3 @@ zle -N newtab
 # bindkey '^[^N' newtab
 # bindkey '^?' backward-delete-char
 
-# bin arrow keys for history search
-bindkey -v
-bindkey "$terminfo[cuu1]" history-substring-search-up
-bindkey "$terminfo[cud1]" history-substring-search-down
