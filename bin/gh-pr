@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+REMOTE=$(git config remote.origin.url)
+
+case "$REMOTE" in
+  git@github.com:*)
+    WITHOUT_SUFFIX=$(echo "${REMOTE:15}" | sed 's/.git$//')
+    BRANCH=$(cat .git/HEAD)
+    open https://github.com/$WITHOUT_SUFFIX/compare/master...${BRANCH:16}?expand=1
+    ;;
+esac
