@@ -1,6 +1,7 @@
 cask_args appdir: '/Applications'
 
 tap 'homebrew/bundle'
+tap 'homebrew/cask-fonts'
 
 brew 'cmake'
 brew 'coreutils'
@@ -13,12 +14,14 @@ brew 'pyenv'
 brew 'readline'
 brew 'ripgrep'
 brew 'shellcheck'
+brew 'starship'
 brew 'tmux'
 brew 'unrar'
 brew 'vim'
 brew 'wget'
 
 cask 'firefox'
+cask 'font-fira-code'
 cask 'google-chrome'
 cask 'intellij-idea'
 cask 'iterm2'

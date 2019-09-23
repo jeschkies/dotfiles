@@ -34,3 +34,6 @@
 [user]
 	name = Karsten Jeschkies
 	email = k@jeschkies.xyz
+
+[commit]
+  template = ~/.gitmessage

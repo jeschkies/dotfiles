@@ -40,5 +40,8 @@ done
 
 unset config_files
 
+
+bindkey -v
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(direnv hook zsh)"
