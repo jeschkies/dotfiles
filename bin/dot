@@ -14,7 +14,7 @@ $ZSH/homebrew/install.sh 2>&1
 
 # Upgrade homebrew
 # Skip if not on maxOS
-if test "$(uname)" != "Darwin"
+if test "$(uname)" = "Darwin"
 then
   echo "› brew update"
   brew update
