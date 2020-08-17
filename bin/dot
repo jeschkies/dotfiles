@@ -13,8 +13,12 @@ $ZSH/macos/set-defaults.sh
 $ZSH/homebrew/install.sh 2>&1
 
 # Upgrade homebrew
-echo "› brew update"
-brew update
+# Skip if not on maxOS
+if test "$(uname)" != "Darwin"
+then
+  echo "› brew update"
+  brew update
+fi
 
 # Install software
 echo "› $ZSH/script/install"

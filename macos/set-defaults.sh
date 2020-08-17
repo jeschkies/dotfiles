@@ -7,6 +7,13 @@
 #
 # Run ./set-defaults.sh and you'll be good to go.
 
+# Skip if not on maxOS
+if test "$(uname)" != "Darwin"
+then
+  echo "  Skipping macOS set defaults."
+  exit 0
+fi
+
 # Disable press-and-hold for keys in favor of key repeat.
 defaults write -g ApplePressAndHoldEnabled -bool false
 
