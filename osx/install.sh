@@ -3,5 +3,12 @@
 # command line interface to it that we can use to just install everything, so
 # yeah, let's do that.
 
+# Skip if not on maxOS
+if test "$(uname)" != "Darwin"
+then
+  echo "  Skipping macOS install."
+  exit 0
+fi
+
 echo "› sudo softwareupdate -i -a"
 sudo softwareupdate -i -a
