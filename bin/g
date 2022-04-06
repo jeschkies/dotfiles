@@ -1,0 +1,873 @@
+#!/bin/sh
+
+# MIT License
+#
+# Copyright (c) 2018 Stefan Maric
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# POSIX shell doesn't support errtrace nor pipefail.
+
+# Exit on error. Append "|| true" if you expect an error.
+set -o errexit
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR.
+set -o nounset
+
+# Uncomment these if you are debugging.
+# set -o xtrace
+# set -o verbose
+
+#
+# Options.
+#
+
+QUIET=false
+NO_COLOR=false
+NON_INTERACTIVE=false
+INCLUDE_UNSTABLE=false
+ARCH=
+OS=
+
+#
+# Detect environment conditions.
+#
+
+if [ ! -t 1 ]; then
+  NO_COLOR=true
+fi
+
+case ${TERM:-""} in
+  "xterm"*) ;;
+  "screen"*) ;;
+  *) NO_COLOR=true ;;
+esac
+
+#
+# Information about the tool.
+#
+
+display_g_version() {
+  echo "0.9.0"
+}
+
+display_help() {
+  cat <<- EOF
+
+  Usage: g [COMMAND] [options] [args]
+
+  Commands:
+
+    g                         Open interactive UI with downloaded versions
+    g install latest          Download and set the latest go release
+    g install <version>       Download and set go <version>
+    g download <version>      Download go <version>
+    g set <version>           Switch to go <version>
+    g run <version>           Run a given version of go
+    g which <version>         Output bin path for <version>
+    g remove <version ...>    Remove the given version(s)
+    g prune                   Remove all versions except the current version
+    g list                    Output downloaded go versions
+    g list-all                Output all available, remote go versions
+    g self-upgrade            Upgrades g to the latest version
+    g help                    Display help information, same as g --help
+
+  Options:
+
+    -h, --help                Display help information and exit
+    -v, --version             Output current version of g and exit
+    -q, --quiet               Suppress almost all output
+    -c, --no-color            Force disabled color output
+    -y, --non-interactive     Prevent prompts
+    -o, --os                  Override operating system
+    -a, --arch                Override system architecture
+    -u, --unstable            Include unstable versions in list
+
+EOF
+}
+
+#
+# POSIX utils.
+#
+
+# Read one char at the time up-to some limit: <var_name> [<read_limit> = 1]
+# Extracted from: https://unix.stackexchange.com/a/464963
+read_user_input() {
+  file_option=
+  input_device=
+  var_name=$1
+  read_limit=${2:-1}
+
+  # Determine where to read user input from.
+  if [ -f "${0:-}" ]; then
+    # When running the script as a binary file, use stdin.
+    input_device="/dev/stdin"
+  else
+    # When running in a pipe, read from the tty.
+    input_device="/dev/tty"
+  fi
+
+  if stty -F "$input_device" > /dev/null 2>&1; then
+    file_option="-F"
+  else
+    file_option="-f"
+  fi
+
+  # Take a backup of the previous settings beforehand.
+  saved_tty_settings=$(stty "$file_option" "$input_device" -g)
+  # Ensure the device is out of icanon, set min and time to sane value, but
+  # don't otherwise touch other input or local settings (echo, isig, icrnl...).
+  stty "$file_option" "$input_device" -icanon min 1 time 0
+
+  # Reset target variable in case it was in use before.
+  eval "$var_name="
+
+  while
+    # Read one byte, using a work around for the fact that command substitution
+    # strips the last character.
+    c=$(
+      dd if=$input_device bs=1 count=1 2> /dev/null
+      echo .
+    )
+    c=${c%.}
+
+    # Break out of the loop on empty input (EOF) or if a full character has been
+    # accumulated in the output variable (using "wc -m" to count the number of
+    # characters).
+    test -n "$c" && eval "
+      $var_name=\"\${${var_name}}\$c\"
+      [ \"\$(printf '%s' \"\$$var_name\" | wc -m)\" -lt $read_limit ]
+    "
+  do
+    continue
+  done
+
+  # Restore settings saved earlier.
+  stty "$file_option" "$input_device" "$saved_tty_settings"
+}
+
+#
+# Add styles to text.
+#
+
+style_text() {
+  color=$1
+  # the rest of the arguments become the text.
+  shift
+  text=$*
+
+  if [ ! "$NO_COLOR" = true ]; then
+    printf "\\033[%sm%s\\033[0m" "$color" "$text"
+  else
+    printf '%s' "$text"
+  fi
+
+}
+
+#
+# Log formated info as <type>: <msg>.
+#
+
+log_info() {
+  if [ "$QUIET" = true ]; then
+    return
+  fi
+
+  # Escape sequences for styling count into the padding for printf.
+  if [ "$NO_COLOR" = true ]; then
+    printf '%14s: %s\n' "$1" "$2"
+  else
+    printf '%23s: %s\n' "$(style_text 94 "$1")" "$(style_text 2 "$2")"
+  fi
+}
+
+#
+# Log the given error <msg ...>.
+#
+
+log_error() {
+  printf '  %s: %s\n' "$(style_text 31 ERROR)" "$(style_text 31 "$*")" >&2
+}
+
+#
+# Exit with the given error <msg ...>.
+#
+
+error_and_abort() {
+  echo
+  log_error "$*"
+  echo
+  exit 1
+}
+
+#
+# Log the error <msg ...>, show help, and exit.
+#
+
+error_help_abort() {
+  echo
+  log_error "$*"
+  display_help >&2
+  exit 1
+}
+
+#
+# Escape sequences for interactive UI.
+#
+
+erase_line() {
+  # Move up a line and erase.
+  printf '\033[1A\033[2K'
+}
+
+hide_cursor() {
+  printf '\033[?25l'
+}
+
+show_cursor() {
+  printf '\033[?25h'
+}
+
+#
+# Functions used when showing interactive UI.
+#
+
+enter_fullscreen() {
+  tput smcup
+  stty -echo
+}
+
+leave_fullscreen() {
+  tput rmcup
+  stty echo
+}
+
+handle_sigint() {
+  leave_fullscreen
+  S="$?"
+  kill 0
+  exit $S
+}
+
+handle_sigtstp() {
+  leave_fullscreen
+  kill -s SIGSTOP $$
+}
+
+#
+# Check if the HTTP response of <url> is OK, i.e status code is bellow 400.
+#
+
+is_url_ok() {
+  cmd=
+
+  # The --head and --spider options of curl and wget, respectively, triggers an
+  # HEAD request, to prevent downloading the actual content.
+  if command -v curl > /dev/null; then
+    cmd="curl --silent --head"
+  elif command -v wget > /dev/null; then
+    cmd="wget --quiet --server-response --spider"
+  else
+    error_and_abort "curl or wget required"
+  fi
+
+  # wget is a bit awkward and using the --server-response option prints the info
+  # to stderr (2) instead of stdout (1), so we need to place a redirect.
+  http_status="$($cmd 2>&1 "$1" | head -n 1 | grep -E -o '[[:digit:]]{3}')"
+
+  # The redirect might mask errors like no connection, so the http status will
+  # be empty in some cases, breaking the arithmetic expression bellow. So handle
+  # empty http_status and treat it as an error as well.
+  if [ -n "$http_status" ] && [ $((http_status < 400)) -ne 0 ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+#
+# Download file with cUrl or fallback to wget.
+#
+
+download_file() {
+  if command -v curl > /dev/null; then
+    params="--location"
+
+    if [ "$QUIET" = true ]; then
+      params="$params --silent"
+    else
+      params="$params --progress-bar"
+    fi
+
+    # shellcheck disable=SC2086
+    curl $params "$@"
+  elif command -v wget > /dev/null; then
+    params="--quiet -O-"
+
+    if [ ! "$QUIET" = true ]; then
+      if wget --help 2>&1 | grep -e '--show-progress' > /dev/null; then
+        params="$params --show-progress"
+      fi
+    fi
+
+    # shellcheck disable=SC2086
+    wget $params "$@"
+  else
+    error_and_abort "curl or wget required"
+  fi
+}
+
+#
+# Fetch download page to get all remote version.
+#
+
+get_all_remote_versions() {
+  pattern=
+
+  if [ "$INCLUDE_UNSTABLE" = true ]; then
+    pattern='go[[:digit:]]+(\.[[:alnum:]]+)+\b'
+  else
+    pattern='go[[:digit:]]+(\.[[:digit:]]+)+\b'
+  fi
+
+  download_file 2> /dev/null "https://go.googlesource.com/go/+refs" \
+    | grep -E -o '\"/go/\+/refs/tags/go.+?\"' \
+    | grep -E -o "$pattern" \
+    | tr -d 'go' \
+    | sort -k 1,1n -k 2,2n -k 3,3n -t . \
+    | uniq
+}
+
+#
+# Display the latest release version.
+#
+
+get_latest_version() {
+  get_all_remote_versions | tail -n1
+}
+
+#
+# Resolve Version argument
+#
+
+resolve_version_argument() {
+  if [ "$1" = "latest" ]; then
+    get_latest_version
+  else
+    echo "$1"
+  fi
+}
+
+#
+# Display installed versions in descending order.
+#
+
+get_installed_versions() {
+  find "$GO_VERSIONS_DIR" -mindepth 1 -maxdepth 1 -type d \
+    | sed "s|$GO_VERSIONS_DIR/||g" \
+    | sort -u -k 1,1n -k 2,2n -k 3,3n -t .
+}
+
+#
+# Get currently active version.
+#
+
+get_current_version() {
+  if command -v go > /dev/null 2>&1; then
+    current=$(go version | cut -d ' ' -f3 | tr -d 'go')
+    if diff > /dev/null 2>&1 "$GO_VERSIONS_DIR/$current/bin/go" "$(command -v go)"; then
+      echo "$current"
+    fi
+  fi
+}
+
+#
+# Get version on the list after <selected>.
+#
+
+get_next_installed_version() {
+  get_installed_versions | grep "$1" -A 1 | tail -n 1
+}
+
+#
+# Get version on the list before <selected>.
+#
+
+get_prev_installed_version() {
+  get_installed_versions | grep "$1" -B 1 | head -n 1
+}
+
+#
+# Assemble the tarball url for a given <version>.
+#
+
+get_tarball_url() {
+  version=$1
+  os=
+  arch=
+
+  case "$(uname | tr '[:upper:]' '[:lower:]')" in
+    linux*) os=linux ;;
+    darwin*) os=darwin ;;
+    freebsd*) os=freebsd ;;
+  esac
+
+  # The use of uname -m instead of -a is intended since coreutils' uname will include "i386" on its
+  # output in MacOS even if the system is 64bits.
+  # This is probably related to how darwin flags the system to differentiate ppc from intel.
+  #
+  # See: https://github.com/stefanmaric/g/pull/15
+  # See: https://unix.stackexchange.com/questions/518318/what-does-i386-mean-on-macos-mojave
+  # See: https://bug-coreutils.gnu.narkive.com/GMke0VIF/uname-problem-on-mac-os-x
+  case "$(uname -m | tr '[:upper:]' '[:lower:]')" in
+    *i686* | *i386*) arch=386 ;;
+    *x86_64*) arch=amd64 ;;
+    *armv6l* | *armv7l*) arch=armv6l ;;
+    *arm64* | *aarch64* | *armv8*) arch=arm64 ;;
+    *ppc64*) arch=ppc64le ;;
+    *s390*) arch=s390x ;;
+  esac
+
+  if [ -n "$OS" ]; then
+    os=$OS
+  fi
+
+  if [ -n "$ARCH" ]; then
+    arch=$ARCH
+  fi
+
+  echo "https://dl.google.com/go/go${version}.${os}-${arch}.tar.gz"
+}
+
+#
+# Display installed versions with <selected>.
+#
+
+display_installed_with_selected() {
+  selected=$1
+  echo
+  for version in $(get_installed_versions); do
+    if [ "$version" = "$selected" ]; then
+      printf '  %s %s \n' "$(style_text 94 ">")" "$version"
+    else
+      printf '    %s \n' "$(style_text 2 "$version")"
+    fi
+  done
+  echo
+}
+
+#
+# Display the versions available.
+#
+
+display_remote_versions() {
+  active=$(get_current_version)
+  versions=$(get_all_remote_versions)
+
+  echo
+  for v in $versions; do
+    if [ "$active" = "$v" ]; then
+      printf '  %s %s \n' "$(style_text 94 ">")" "$v"
+    else
+      if [ -d "$GO_VERSIONS_DIR/$v" ]; then
+        printf '    %s \n' "$v"
+      else
+        printf '    %s \n' "$(style_text 2 "$v")"
+      fi
+    fi
+  done
+  echo
+}
+
+#
+# Display current go version and others installed.
+#
+
+open_interactive_ui() {
+  if [ "$NON_INTERACTIVE" = true ]; then
+    error_and_abort "cannot run interactive UI in non-interactive shell"
+  fi
+
+  enter_fullscreen
+  clear
+
+  active=$(get_current_version)
+  selected=$active
+
+  display_installed_with_selected "$selected"
+
+  trap handle_sigint INT
+  trap handle_sigtstp TSTP
+
+  ESCAPE_SEQ=$(printf '\033')
+  UP=$(printf 'A')
+  DOWN=$(printf 'B')
+
+  key=
+  arrow=
+  tmp=
+
+  while true; do
+    read_user_input key
+    case "$key" in
+      "$ESCAPE_SEQ")
+        # Handle ESC sequences followed by other characters, i.e. arrow keys.
+        read_user_input tmp
+        if [ "$tmp" = "[" ]; then
+          read_user_input arrow
+          case $arrow in
+            "$UP")
+              clear
+              selected=$(get_prev_installed_version "$selected")
+              display_installed_with_selected "$selected"
+              ;;
+            "$DOWN")
+              clear
+              selected=$(get_next_installed_version "$selected")
+              display_installed_with_selected "$selected"
+              ;;
+          esac
+        fi
+        ;;
+      "k")
+        clear
+        selected=$(get_prev_installed_version "$selected")
+        display_installed_with_selected "$selected"
+        ;;
+      "j")
+        clear
+        selected=$(get_next_installed_version "$selected")
+        display_installed_with_selected "$selected"
+        ;;
+      "q")
+        clear
+        leave_fullscreen
+        exit
+        ;;
+      *)
+        # If the user hit the ENTER key, the variable includes a new line.
+        if [ "$(echo "$key" | wc -l)" -gt 1 ]; then
+          set_version "$selected"
+          leave_fullscreen
+          go version
+          exit
+        fi
+        ;;
+    esac
+  done
+}
+
+#
+# Activate <version>
+#
+
+set_version() {
+  version=$(resolve_version_argument "$1")
+  active=$(get_current_version)
+  dir="$GO_VERSIONS_DIR/$version"
+
+  if [ ! -d "$dir" ]; then
+    error_and_abort "Version $version is not available. Use 'g install $version' to install it."
+  fi
+
+  if [ "$version" != "$active" ]; then
+    if [ ! -e "$dir/g.lock" ]; then
+      for file in "$dir/"*; do
+        if [ -L "${GOROOT:?}/$(basename "$file")" ]; then
+          rm "${GOROOT:?}/$(basename "$file")"
+        elif [ -e "${GOROOT:?}/$(basename "$file")" ]; then
+          # enable seamless upgrade to symlink behavior
+          rm -rf "${GOROOT:?}/$(basename "$file")"
+        fi
+        ln -sf "$file" "${GOROOT:?}/$(basename "$file")"
+      done
+
+      for file in "$dir/bin/"*; do
+        ln -sf "$GOROOT/bin/$(basename "$file")" "$GOPATH/bin/"
+      done
+    else
+      error_and_abort "version $version installation might be corrupted"
+    fi
+  fi
+}
+
+#
+# Install <version>.
+#
+
+install_version() {
+  version=$(resolve_version_argument "$1")
+  dir="$GO_VERSIONS_DIR/$version"
+
+  if [ -d "$dir" ]; then
+    set_version "$version"
+    exit
+  fi
+
+  download_version "$version"
+  set_version "$version"
+
+  log_info "installed" "$(go version)"
+}
+
+#
+# Download <version>.
+#
+
+download_version() {
+  version=$(resolve_version_argument "$1")
+  dir="$GO_VERSIONS_DIR/$version"
+
+  echo
+  log_info "selected" "$version"
+
+  url=$(get_tarball_url "$version")
+
+  if ! is_url_ok "$url"; then
+    error_and_abort "invalid version $version"
+  fi
+
+  log_info "location" "$dir"
+
+  if mkdir -p "$dir"; then
+    touch "$dir/g.lock"
+  else
+    error_and_abort "cannot create $dir"
+  fi
+
+  cd "$dir" || error_and_abort "cannot cd into $dir"
+
+  log_info "downloading" "$url"
+
+  download_file "$url" | tar -zx --strip-components=1
+
+  [ $QUIET = false ] && erase_line
+
+  rm -f "$dir/g.lock"
+
+  log_info "downloaded" "$version"
+}
+
+#
+# Remove <version ...>.
+#
+
+remove_versions() {
+  if [ -z "$1" ]; then
+    error_and_abort "version(s) required"
+  fi
+
+  active=$(get_current_version)
+
+  while test $# -ne 0; do
+    version=$1
+    [ "$version" = "$active" ] && error_and_abort "cannot remove currently active version ($active)"
+    log_info "remove" "$version"
+    rm -rf "${GO_VERSIONS_DIR:?}/$version"
+    shift
+  done
+}
+
+#
+# Prune non-active versions.
+#
+
+prune_versions() {
+  active=$(get_current_version)
+
+  for version in $(get_installed_versions); do
+    if [ "$version" != "$active" ]; then
+      remove_versions "$version"
+    fi
+  done
+}
+
+#
+# Output bin path for <version>.
+#
+
+display_bin_path_for_version() {
+  if [ -z "$1" ]; then
+    error_and_abort "version required"
+  fi
+
+  version=$(resolve_version_argument "$1")
+  bin="$GO_VERSIONS_DIR/$version/bin/go"
+
+  if [ -f "$bin" ]; then
+    echo "$bin"
+  else
+    error_and_abort "$version is not installed"
+  fi
+}
+
+#
+# Execute the given <version> of go with [args ...].
+#
+
+run_with_version() {
+  if [ -z "$1" ]; then
+    error_and_abort "version required"
+  fi
+
+  version=$(resolve_version_argument "$1")
+  response=
+
+  root="$GO_VERSIONS_DIR/$version"
+  bin="$root/bin/go"
+
+  shift # remove version
+
+  if [ ! -x "$bin" ]; then
+    echo
+
+    if [ "$NON_INTERACTIVE" = true ]; then
+      download_version "$version"
+    else
+      # Wrap it in printf to remove info's default line ending
+      printf "%s" "$(log_info "info" "$version is not installed, install it now? [y/N] ")"
+      read_user_input response
+
+      if [ "$response" = "y" ]; then
+        download_version "$version"
+      else
+        error_and_abort "$version is not installed"
+      fi
+    fi
+  fi
+
+  GOROOT=$root exec "$bin" "$@"
+}
+
+self_upgrade() {
+  if [ ! -x "$GOPATH/bin/g" ]; then
+    error_and_abort "The self-upgrade command can only be used if g was installed using g-install"
+  fi
+
+  if [ "$0" = "$GOPATH/bin/g" ]; then
+    tmp_dir=${TMPDIR:-"/tmp"}/g-update.$$
+    tmp_file=$tmp_dir/g
+    (umask 077 && mkdir "$tmp_dir") || error_and_abort "couldn't create temp dir $tmp_dir"
+    cp "$0" "$tmp_file"
+    chmod +x "$tmp_file"
+    exec "$tmp_file" self-upgrade
+  fi
+
+  if command -v curl > /dev/null; then
+    curl -sSL https://git.io/g-install | sh -s -- -y
+  elif command -v wget > /dev/null; then
+    wget -qO- https://git.io/g-install | sh -s -- -y
+  else
+    error_and_abort "curl or wget required"
+  fi
+}
+
+#
+# Make sure required go env vars are available.
+#
+
+if [ -z "${GOPATH:-}" ] || [ -z "${GOROOT:-}" ]; then
+  error_help_abort "\$GOPATH and \$GOROOT environment variables are required."
+fi
+
+BIN_DIR="$GOPATH/bin"
+
+if [ "${PATH##*$BIN_DIR*}" = "$PATH" ]; then
+  error_help_abort "\$GOPATH/bin not found in \$PATH and it is required."
+fi
+
+#
+# Create bin dir inside GOPATH if it doesn't exists yet
+#
+
+if [ ! -d "$BIN_DIR" ]; then
+  mkdir -p "$BIN_DIR"
+fi
+
+#
+# create versions dir if it doesn't exist yet.
+#
+
+GO_VERSIONS_DIR="$GOROOT/.versions"
+
+if [ ! -d "$GO_VERSIONS_DIR" ]; then
+  mkdir -p "$GO_VERSIONS_DIR"
+fi
+
+#
+# Handle arguments.
+#
+
+__cmd=
+__cmd_args=""
+
+if [ $# -eq 0 ]; then
+  if [ -z "$(get_installed_versions)" ]; then
+    error_help_abort "no versions installed yet"
+  fi
+
+  open_interactive_ui
+else
+  while test $# -ne 0; do
+    case $1 in
+      install | set | download | run | remove | prune | which | list | list-all | self-upgrade) __cmd=$1 ;;
+      -h | --help | help)
+        display_help
+        exit
+        ;;
+      -v | --version)
+        display_g_version
+        exit
+        ;;
+      -q | --quiet) QUIET=true ;;
+      -c | --no-color) NO_COLOR=true ;;
+      -y | --non-interactive) NON_INTERACTIVE=true ;;
+      -o | --os)
+        shift
+        OS=$1
+        ;;
+      -a | --arch)
+        shift
+        ARCH=$1
+        ;;
+      -u | --unstable) INCLUDE_UNSTABLE=true ;;
+      --)
+        __cmd_args="$__cmd_args $*"
+        break
+        ;;
+      *) __cmd_args="$__cmd_args $1" ;;
+    esac
+    shift
+  done
+
+  # The unquoted expansions here are intentional.
+  # shellcheck disable=SC2086
+  case $__cmd in
+    install) install_version $__cmd_args ;;
+    download) download_version $__cmd_args ;;
+    set) set_version $__cmd_args ;;
+    run) run_with_version $__cmd_args ;;
+    remove) remove_versions $__cmd_args ;;
+    prune) prune_versions ;;
+    which) display_bin_path_for_version $__cmd_args ;;
+    list) display_installed_with_selected "$(get_current_version)" ;;
+    list-all) display_remote_versions ;;
+    self-upgrade) self_upgrade ;;
+    *) error_help_abort "Invalid command $__cmd" ;;
+  esac
+fi
