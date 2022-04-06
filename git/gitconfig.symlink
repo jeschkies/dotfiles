@@ -11,7 +11,7 @@
         ui = true
 [core]
         excludesfile = ~/.gitignore
-        editor = vim
+	editor = nvim
 [apply]
         whitespace = nowarn
 [mergetool]
@@ -29,8 +29,11 @@
 [user]
 	name = Karsten Jeschkies
 	email = k@jeschkies.xyz
+	signingkey = 22E0B80DB04BE9D08EE9DC002808F3EBAA8C2A93
 
 [commit]
   template = ~/.gitmessage
 [init]
 	defaultBranch = main
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
