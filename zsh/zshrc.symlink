@@ -47,7 +47,4 @@ bindkey -v
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(direnv hook zsh)"
 
-export WASMTIME_HOME="$HOME/.wasmtime"
-
-export PATH="$WASMTIME_HOME/bin:$PATH"
 export MOZ_ENABLE_WAYLAND=1
