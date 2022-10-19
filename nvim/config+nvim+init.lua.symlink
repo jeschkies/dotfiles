@@ -1,6 +1,14 @@
+
+require('packer').startup(function(use)
+  use 'wbthomason/packer.nvim' -- Package manager
+  use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
+end)
+
+--[[
 " Plugins
 call plug#begin()
   Plug 'neomake/neomake'
+  Plug 'neovim/nvim-lspconfig' 
   Plug 'ku-s-h/summerfruit256.vim'
   Plug 'rust-lang/rust.vim'
 call plug#end()
@@ -33,3 +41,7 @@ set showbreak=⇇
 
 syntax on
 filetype plugin indent on
+--]]
+
+-- " LSP
+-- :lua require'lspconfig'.gopls.setup{}
