@@ -1,9 +1,8 @@
+require "plugins"
+require "lsp"
 
-require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim' -- Package manager
-  use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
-end)
-
+vim.o.background = "light"
+vim.cmd('colorscheme PaperColor')
 --[[
 " Plugins
 call plug#begin()
