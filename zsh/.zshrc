@@ -44,7 +44,7 @@ unset config_files
 bindkey -v
 
 # load fzf keybindings last
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f "$ZSH/key-bindings.zsh" ] && source "$ZSH/key-bindings.zsh"
 eval "$(direnv hook zsh)"
 
 export MOZ_ENABLE_WAYLAND=1
