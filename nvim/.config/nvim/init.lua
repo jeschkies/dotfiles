@@ -4,6 +4,11 @@ require "key-bindings"
 
 vim.o.background = "light"
 vim.cmd('colorscheme PaperColor')
+
+vim.wo.colorcolumn = 120
+vim.wo.number = true
+vim.wo.showbreak= '⇇'
+
 --[[
 " Plugins
 call plug#begin()
@@ -35,9 +40,6 @@ colorscheme summerfruit256
 
 " 120 characters margin and line numbers
 set tw=120
-set colorcolumn=120
-set number
-set showbreak=⇇
 
 syntax on
 filetype plugin indent on
