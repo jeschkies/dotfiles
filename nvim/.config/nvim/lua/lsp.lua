@@ -1,9 +1,9 @@
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { "gopls", "sumneko_lua" }
+    ensure_installed = { "gopls", "rust_analyzer", "sumneko_lua" }
 })
 
--- LUA LSP
+-- Lua
 require'lspconfig'.sumneko_lua.setup {
   settings = {
     Lua = {
@@ -26,3 +26,6 @@ require'lspconfig'.sumneko_lua.setup {
     },
   },
 }
+
+-- Rust
+require'lspconfig'.rust_analyzer.setup{}
