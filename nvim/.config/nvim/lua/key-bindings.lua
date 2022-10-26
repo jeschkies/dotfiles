@@ -1,9 +1,11 @@
-require "plugins"
-require "lsp"
-require "key-bindings"
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
 
-vim.o.background = "light"
-vim.cmd('colorscheme PaperColor')
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 --[[
 " Plugins
 call plug#begin()

@@ -24,6 +24,12 @@ end
 return packer.startup(function(use)
   use 'wbthomason/packer.nvim' -- Package manager
 
+  -- Telescope
+  use {
+    'nvim-telescope/telescope.nvim', tag = '0.1.0',
+    requires = { {'nvim-lua/plenary.nvim'} }
+  }
+
   -- LSP
   use 'williamboman/mason.nvim' -- Mason package manager
   use 'williamboman/mason-lspconfig.nvim'

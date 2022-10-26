@@ -28,7 +28,7 @@
         default = simple
 [user]
 	name = Karsten Jeschkies
-	email = k@jeschkies.xyz
+	email = karsten.jeschkies@grafana.com
 	signingkey = 22E0B80DB04BE9D08EE9DC002808F3EBAA8C2A93
 
 [commit]
