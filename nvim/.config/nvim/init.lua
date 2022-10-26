@@ -1,12 +1,13 @@
 require "plugins"
 require "lsp"
 require "key-bindings"
-
 vim.o.background = "light"
 vim.cmd('colorscheme PaperColor')
 
-vim.wo.colorcolumn = 120
-vim.wo.number = true
+vim.opt.tw = 80
+vim.opt.colorcolumn = '80'
+vim.opt.number = true
+vim.opt.numberwidth = 2
 vim.wo.showbreak= '⇇'
 
 --[[
