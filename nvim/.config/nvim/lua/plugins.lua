@@ -35,6 +35,13 @@ return packer.startup(function(use)
   use 'williamboman/mason-lspconfig.nvim'
   use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
 
+  -- Code Completion
+  use 'hrsh7th/nvim-cmp'
+  use 'hrsh7th/cmp-nvim-lsp'
+  use 'hrsh7th/cmp-buffer'
+  use 'hrsh7th/cmp-path'
+  use 'onsails/lspkind-nvim'
+
   -- Color
   use 'NLKNguyen/papercolor-theme'
 

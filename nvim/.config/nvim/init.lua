@@ -1,4 +1,5 @@
 require "plugins"
+require "completion"
 require "lsp"
 require "key-bindings"
 vim.o.background = "light"
