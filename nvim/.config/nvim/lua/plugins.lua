@@ -34,6 +34,7 @@ return packer.startup(function(use)
   use 'williamboman/mason.nvim' -- Mason package manager
   use 'williamboman/mason-lspconfig.nvim'
   use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
+  use 'RRethy/vim-illuminate' -- highlight symbol under the cursor
 
   -- Code Completion
   use 'hrsh7th/nvim-cmp'
