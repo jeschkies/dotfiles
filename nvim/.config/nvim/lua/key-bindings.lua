@@ -13,4 +13,5 @@ vim.keymap.set('n', '<leader>fh', builtin.help_tags, bufopts)
 -- LSP
 vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
