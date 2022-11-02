@@ -4,10 +4,24 @@ lspkind.init()
 local cmp = require "cmp"
 
 cmp.setup {
+    mapping = {
+        ["<CR>"] = cmp.mapping.confirm {
+            behavior = cmp.ConfirmBehavior.Insert,
+            select = true,
+        },
+        ["<C-space>"] = cmp.mapping.complete(),
+    },
+
     sources = {
         { name = "nvim_lsp" },
         { name = "path" },
         { name = "buffer", keyword_length = 5 },
+    },
+
+    snippet = {
+        expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+        end,
     },
 
     formatting = {
