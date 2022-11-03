@@ -10,6 +10,8 @@ cmp.setup {
             select = true,
         },
         ["<C-space>"] = cmp.mapping.complete(),
+        ["<C-k>"] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
+	["<C-j>"] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
     },
 
     sources = {
