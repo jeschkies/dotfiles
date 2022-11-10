@@ -45,3 +45,8 @@ require'lspconfig'.rust_analyzer.setup{
 require'lspconfig'.gopls.setup{
   on_attach = on_attach
 }
+
+-- Terraform
+require'lspconfig'.terraformls.setup{
+  on_attach = on_attach
+}
