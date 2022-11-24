@@ -2,6 +2,7 @@ require "plugins"
 require "completion"
 require "lsp"
 require "key-bindings"
+require "fzf"
 vim.o.background = "light"
 vim.cmd('colorscheme PaperColor')
 
