@@ -50,3 +50,8 @@ require'lspconfig'.gopls.setup{
 require'lspconfig'.terraformls.setup{
   on_attach = on_attach
 }
+
+-- JavaScript / Typescript
+require'lspconfig'.eslint.setup{
+  on_attach = on_attach
+}
