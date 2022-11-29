@@ -1,8 +1,12 @@
 require "plugins"
+require "git"
 require "completion"
 require "lsp"
 require "key-bindings"
 require "fzf"
+
+vim.o.updatetime = 500
+
 vim.o.background = "light"
 vim.cmd('colorscheme PaperColor')
 
