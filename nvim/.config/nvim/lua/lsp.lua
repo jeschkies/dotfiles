@@ -1,6 +1,6 @@
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { "gopls", "rust_analyzer", "sumneko_lua" }
+    ensure_installed = { "golangci_lint_ls", "gopls", "rust_analyzer", "sumneko_lua" }
 })
 
 -- on attach function (for all servers)
@@ -45,6 +45,9 @@ require'lspconfig'.rust_analyzer.setup{
 require'lspconfig'.gopls.setup{
   on_attach = on_attach
 }
+require'lspconfig'.golangci_lint_ls.setup{
+  on_attach = on_attach
+}
 
 -- Terraform
 require'lspconfig'.terraformls.setup{
@@ -52,6 +55,6 @@ require'lspconfig'.terraformls.setup{
 }
 
 -- JavaScript / Typescript
-require'lspconfig'.eslint.setup{
+require'lspconfig'.tsserver.setup{
   on_attach = on_attach
 }
