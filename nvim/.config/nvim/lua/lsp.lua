@@ -1,6 +1,6 @@
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { "golangci_lint_ls", "gopls", "rust_analyzer", "sumneko_lua" }
+    ensure_installed = { "golangci_lint_ls", "gopls", "rust_analyzer", "lua_ls" }
 })
 
 -- on attach function (for all servers)
@@ -12,7 +12,7 @@ local function on_attach(client)
 end
 
 -- Lua
-require'lspconfig'.sumneko_lua.setup {
+require'lspconfig'.lua_ls.setup {
   on_attach = on_attach,
   settings = {
     Lua = {
