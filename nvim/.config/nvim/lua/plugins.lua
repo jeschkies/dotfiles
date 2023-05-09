@@ -25,9 +25,16 @@ return packer.startup(function(use)
   use 'wbthomason/packer.nvim' -- Package manager
 
   -- Telescope
+  use 'nvim-tree/nvim-web-devicons'
   use {
     'nvim-telescope/telescope.nvim', tag = '0.1.0',
     requires = { {'nvim-lua/plenary.nvim'} }
+  }
+
+  -- Diagnostics Windows Trouble
+  use {
+    "folke/trouble.nvim",
+    requires = "nvim-tree/nvim-web-devicons"
   }
 
   -- Git Signs
