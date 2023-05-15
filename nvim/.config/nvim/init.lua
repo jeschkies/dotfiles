@@ -8,6 +8,16 @@ require "fzf"
 vim.o.updatetime = 500
 
 vim.o.background = "light"
+vim.g.PaperColor_Theme_Options = {
+  theme = {
+    ['default.light'] = {
+      override = {
+             cursor_fg = {'#1c1c1c', '234'},
+             cursor_bg = {'#c6c6c6', '251'},
+      }
+    }
+  }
+}
 vim.cmd('colorscheme PaperColor')
 
 vim.opt.tw = 80
