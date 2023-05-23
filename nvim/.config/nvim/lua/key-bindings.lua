@@ -17,11 +17,14 @@ vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>",
 vim.keymap.set("n", "gr", "<cmd>TroubleToggle lsp_references<cr>",
   {silent = true, noremap = true}
 )
+vim.keymap.set("n", "gi", "<cmd>TroubleToggle lsp_implementations<cr>",
+  {silent = true, noremap = true}
+)
 
 -- LSP
 vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+-- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
 -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
 vim.keymap.set('n', '<leader>dd', '<cmd>Telescope diagnostics<CR>', { noremap = true, silent = true })
