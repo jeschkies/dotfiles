@@ -27,15 +27,11 @@ defaults write com.apple.Finder FXPreferredViewStyle Nlsv
 chflags nohidden ~/Library
 
 # Set a really fast key repeat.
-defaults write NSGlobalDomain KeyRepeat -int 0
+defaults write NSGlobalDomain KeyRepeat -int 1
 
 # Set the Finder prefs for showing a few different volumes on the Desktop.
 defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
 defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
-
-# Run the screensaver if we're in the bottom-left hot corner.
-defaults write com.apple.dock wvous-bl-corner -int 5
-defaults write com.apple.dock wvous-bl-modifier -int 0
 
 # Hide Safari's bookmark bar.
 defaults write com.apple.Safari ShowFavoritesBar -bool false
@@ -59,8 +55,8 @@ defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 # 10: Put display to sleep
 # 11: Launchpad
 # 12: Notification Center
-# Top left screen corner → Mission Control
-defaults write com.apple.dock wvous-tl-corner -int 2
+# Top left screen corner → Show application windows
+defaults write com.apple.dock wvous-tl-corner -int 3
 defaults write com.apple.dock wvous-tl-modifier -int 0
 
 # Bottom left screen corenr → Run the screensaver
