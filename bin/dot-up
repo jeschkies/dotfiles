@@ -1,21 +1,22 @@
 #!/bin/sh
 #
-# dot
+# dot-up
 #
-# `dot` handles installation, updates, things like that. Run it periodically
+# `dot-up` handles installation, updates, things like that. Run it periodically
 # to make sure you're on the latest and greatest.
 export ZSH=$HOME/.dotfiles
 
-# Set OS X defaults
-$ZSH/macos/set-defaults.sh
-
-# Install homebrew
-$ZSH/homebrew/install.sh 2>&1
 
 # Upgrade homebrew
 # Skip if not on maxOS
 if test "$(uname)" = "Darwin"
 then
+  # Set OS X defaults
+  $ZSH/macos/set-defaults.sh
+
+  # Install homebrew
+  $ZSH/homebrew/install.sh 2>&1
+
   echo "› brew update"
   brew update
 fi
