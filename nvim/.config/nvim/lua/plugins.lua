@@ -60,6 +60,9 @@ return packer.startup(function(use)
   -- Color
   use 'NLKNguyen/papercolor-theme'
 
+  -- Testing
+  use 'vim-test/vim-test'
+
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
   if PACKER_BOOTSTRAP then
