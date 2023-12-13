@@ -42,6 +42,9 @@ vim.api.nvim_create_autocmd("CursorHold", {
   end
 })
 
+-- Test
+vim.g["test#neovim#start_normal"] = 1
+vim.g["test#basic#start_normal"] = 1
 --[[
 " Plugins
 call plug#begin()
