@@ -30,6 +30,7 @@ vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
 vim.keymap.set('n', '<leader>dd', '<cmd>Telescope diagnostics<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>d[', '<cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>d]', '<cmd>lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
 
 -- Testing
 vim.keymap.set('n','<leader>tn', '<cmd>TestNearest<CR>', { noremap = true, silent = true })
