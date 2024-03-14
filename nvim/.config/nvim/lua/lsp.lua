@@ -43,7 +43,12 @@ require'lspconfig'.rust_analyzer.setup{
 
 -- Go
 require'lspconfig'.gopls.setup{
-  on_attach = on_attach
+  on_attach = on_attach,
+  settings = {
+    gopls = {
+      gofumpt = true,
+    },
+  },
 }
 require'lspconfig'.golangci_lint_ls.setup{
   on_attach = on_attach
