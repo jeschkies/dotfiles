@@ -63,3 +63,8 @@ require'lspconfig'.terraformls.setup{
 require'lspconfig'.tsserver.setup{
   on_attach = on_attach
 }
+
+-- Jsonnet
+require'lspconfig'.jsonnet_ls.setup{
+  on_attach = on_attach
+}
