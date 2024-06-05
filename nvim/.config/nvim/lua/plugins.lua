@@ -58,7 +58,8 @@ return packer.startup(function(use)
   use 'onsails/lspkind-nvim'
 
   -- Color
-  use 'NLKNguyen/papercolor-theme'
+  -- use 'NLKNguyen/papercolor-theme'
+  use { "catppuccin/nvim", as = "catppuccin" }
 
   -- Testing
   use 'vim-test/vim-test'

@@ -19,10 +19,12 @@ vim.g.PaperColor_Theme_Options = {
     }
   }
 }
-vim.cmd('colorscheme PaperColor')
 
-vim.opt.tw = 80
-vim.opt.colorcolumn = '80'
+vim.cmd.colorscheme "catppuccin-latte"
+colorscheme = "catppuccin-latte"
+
+vim.opt.tw = 120
+vim.opt.colorcolumn = '120'
 vim.opt.number = true
 vim.opt.numberwidth = 2
 vim.wo.showbreak= '⇇'
@@ -53,11 +55,6 @@ set hidden
 nmap <leader>l :bnext<CR>
 nmap <leader>h :bprevious<CR>
 nmap <leader>p :CtrlP<CR>
-
-" Theme
-colors summerfruit256
-set t_Co=256
-colorscheme summerfruit256
 
 " 120 characters margin and line numbers
 set tw=120
