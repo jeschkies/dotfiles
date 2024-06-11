@@ -1,6 +1,9 @@
 require "autocmd"
 require "plugins"
 
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
@@ -17,5 +20,3 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup("plugins")
 
 vim.o.updatetime = 500
-vim.g.mapleader = ","
-vim.g.maplocalleader = ","
