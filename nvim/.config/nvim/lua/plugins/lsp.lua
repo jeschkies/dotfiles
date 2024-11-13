@@ -72,12 +72,17 @@ return {
 		}
 
 		-- JavaScript / Typescript
-		require 'lspconfig'.tsserver.setup {
+		require 'lspconfig'.ts_ls.setup {
 			on_attach = on_attach
 		}
 
 		-- Jsonnet
 		require 'lspconfig'.jsonnet_ls.setup {
+			on_attach = on_attach
+		}
+
+		-- Python
+		require 'lspconfig'.pyright.setup {
 			on_attach = on_attach
 		}
 

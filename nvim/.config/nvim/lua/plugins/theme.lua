@@ -6,6 +6,8 @@ return {
       config = function()
         local base16 = require("base16-colorscheme")
         vim.cmd.colorscheme('base16-catppuccin-latte')
+        -- vim.cmd.colorscheme('base16-one-light')
+        -- vim.cmd.colorscheme('base16-ayu-light')
 
 	-- override some colors
 	local colors = require('base16-colorscheme').colors
