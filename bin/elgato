@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Controls Elgato Keylights.
+#
+# Usage: elgato <on|off>
+#
+# Will switch all known keylights on or off.
+
+# Thanks to https://github.com/sdaschner for the original script.
+
+if [[ "$1" == "" ]]; then
+  >&2 echo "Usage: ${0##*/} <on|off>"; exit 2
+fi
+
+set -euo pipefail
+
+function lights() {
+  host=$1
+  echo "Switching $host"
+  if [[ "$2" == "on" ]]; then
+    on=1
+  else
+    on=0
+  fi
+  curl --silent "http://$host/elgato/lights" -XPUT -H 'Content-Type: application/json' -d '{"numberOfLights":1,"lights":[{"on":'$on'}]}' > /dev/null
+}
+
+
+declare -a lights
+function find_lights() {
+  declare -a avahi
+  readarray -t avahi < <(avahi-browse -d local _elg._tcp --resolve -t -p | grep "=")
+
+  for i in "${avahi[@]}"; do
+    IFS=';' read -ra data <<<"$i"
+    if [[ "${data[2]}" == "IPv4" ]]; then
+      lights+=("${data[7]}:${data[8]}")
+    fi
+  done
+}
+
+# Main
+if [[ "$1" == "on" ]]; then
+  echo "Turning all lights on"
+else
+  echo "Turning all lights off"
+fi
+
+find_lights
+for light in "${lights[@]}"; do
+  lights "$light" "$1"
+done
