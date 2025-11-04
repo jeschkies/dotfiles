@@ -1,6 +1,6 @@
 return {
 	'williamboman/mason-lspconfig.nvim',
-	event = "BufRead *.rs,*.py,*.lua,*.dart,*.js,*.go,*.jsonnet,*.libsonnet",
+	event = "BufRead *.rs,*.py,*.lua,*.js,*.go,*.jsonnet,*.libsonnet",
 	dependencies = {
 		'williamboman/mason.nvim', -- Mason package manager
 		'neovim/nvim-lspconfig', -- Configurations for Nvim LSP
@@ -73,6 +73,11 @@ return {
 
 		-- JavaScript / Typescript
 		require 'lspconfig'.ts_ls.setup {
+			on_attach = on_attach
+		}
+
+		-- Java
+		require 'lspconfig'.jdtls.setup {
 			on_attach = on_attach
 		}
 
