@@ -1,19 +1,44 @@
 return {
-	'hrsh7th/nvim-cmp',
+	'saghen/blink.cmp',
+
 	dependencies = {
-		'hrsh7th/cmp-nvim-lsp',
-		'hrsh7th/cmp-buffer',
-		'hrsh7th/cmp-path',
+		'rafamadriz/friendly-snippets',
 
-		'L3MON4D3/LuaSnip',
-		'saadparwaiz1/cmp_luasnip',
-
-		'onsails/lspkind-nvim',
 
 		-- Gen AI
-		"supermaven-inc/supermaven-nvim",
+		--"supermaven-inc/supermaven-nvim",
 	},
 
+	version = '1.*',
+
+	opts = {
+		keymap = {
+			preset = 'default',
+
+			['<C-k>'] = { 'select_prev', 'fallback_to_mappings' },
+			['<C-j>'] = { 'select_next', 'fallback_to_mappings' },
+			['<CR>'] = { 'accept', 'fallback' },
+		},
+
+		appearance = {
+			nerd_font_variant = 'mono'
+		},
+
+		sources = {
+			default = { 'lsp', 'path', 'snippets', 'buffer' },
+		},
+
+		fuzzy = { implementation = "prefer_rust_with_warning" },
+
+		completion = {
+			menu = {
+				draw = {
+					columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } }
+				}
+			}
+		},
+	},
+	--[[
 	config = function()
 		local lspkind = require("lspkind")
 		lspkind.init()
@@ -71,4 +96,5 @@ return {
 			vim.api.nvim_set_hl(0, "CmpItemKindSupermaven", { fg = "#a6e3a1" })
 		}
 	end
+	--]]
 }
