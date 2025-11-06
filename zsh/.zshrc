@@ -1,4 +1,4 @@
-zmodload zsh/zprof # profile
+#zmodload zsh/zprof # profile
 
 # shortcut to this dotfiles path is $ZSH
 export ZSH=$HOME/.dotfiles
@@ -51,4 +51,4 @@ eval "$(direnv hook zsh)"
 
 export MOZ_ENABLE_WAYLAND=1
 
-zprof # profile
+#zprof # profile
