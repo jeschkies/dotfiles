@@ -5,8 +5,6 @@ return {
 		'williamboman/mason.nvim', -- Mason package manager
 		'neovim/nvim-lspconfig', -- Configurations for Nvim LSP
 		'RRethy/vim-illuminate', -- highlight symbol under the cursor
-
-		'google/vim-jsonnet'
 	},
 
 	opts = {
@@ -67,7 +65,7 @@ return {
 	config = function(_, opts)
 		require("mason").setup()
 		require("mason-lspconfig").setup({
-			ensure_installed = { "golangci_lint_ls", "gopls", "rust_analyzer", "lua_ls" }
+			ensure_installed = { "golangci_lint_ls", "gopls", "rust_analyzer", "lua_ls", "jsonnet_ls" }
 		})
 
 
