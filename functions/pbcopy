@@ -1,0 +1,9 @@
+#!/bin/zsh
+#
+# Provide a macOS-style pbcopy on Linux using xclip.
+# Autoloaded as a function (see zsh/config.zsh), so run xclip directly and
+# forward stdin/args instead of defining an alias.
+
+if [[ "$OSTYPE" == linux* ]]; then
+  xclip -selection clipboard "$@"
+fi
