@@ -52,7 +52,7 @@ setup_gitconfig () {
 
 stow_package () {
   local pkg="$1"
-  local stow_opts=(--ignore='path.*' --ignore='completion.*')
+  local stow_opts=()
   local dry_run_output
 
   if dry_run_output=$(stow -n "${stow_opts[@]}" "$pkg" 2>&1)
