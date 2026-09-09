@@ -3,4 +3,4 @@
 set -e
 
 # Avoid .config to be symlinked
-mkdir -p pushd "$HOME/.config"
+mkdir -p "$HOME/.config"
