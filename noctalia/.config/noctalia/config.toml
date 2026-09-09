@@ -1,0 +1,10 @@
+[theme]
+mode              = "light"
+builtin           = "Catppuccin"
+
+[theme.templates]
+enable_builtin_templates = true
+builtin_ids              = ["ghostty", "niri"]
+
+[templates]
+community_ids = ["spicetify"]
