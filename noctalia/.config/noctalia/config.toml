@@ -8,3 +8,7 @@ builtin_ids              = ["ghostty", "niri"]
 
 [templates]
 community_ids = ["spicetify"]
+
+[plugins]
+enabled = ["davemhammer/tailscale"]
+auto_update = "all"
