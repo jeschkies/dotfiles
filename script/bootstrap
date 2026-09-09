@@ -50,13 +50,65 @@ setup_gitconfig () {
 }
 
 
+stow_package () {
+  local pkg="$1"
+  local stow_opts=(--ignore='path.*' --ignore='completion.*')
+  local dry_run_output
+
+  if dry_run_output=$(stow -n "${stow_opts[@]}" "$pkg" 2>&1)
+  then
+    stow "${stow_opts[@]}" "$pkg"
+    return
+  fi
+
+  local conflicts
+  conflicts=$(echo "$dry_run_output" | sed -n \
+    -e 's/.*over existing target \(.*\) since.*/\1/p' \
+    -e 's/.*existing target is not owned by stow: \(.*\)/\1/p')
+
+  if [ -z "$conflicts" ]
+  then
+    echo "$dry_run_output"
+    fail "stow failed for '$pkg' and the conflict could not be parsed; resolve manually"
+  fi
+
+  user "'$pkg' conflicts with existing files:"
+  echo "$conflicts" | sed "s|^|        $HOME/|"
+  user " - Override (delete the files above) and stow '$pkg', or abort? [o/A]"
+  read -e -r answer
+
+  if [[ "$answer" =~ ^[Oo]$ ]]
+  then
+    while IFS= read -r rel_path
+    do
+      rm -rf "$HOME/$rel_path"
+    done <<< "$conflicts"
+
+    stow "${stow_opts[@]}" "$pkg"
+    success "stowed '$pkg' (overrode conflicting files)"
+  else
+    fail "aborted: '$pkg' has conflicting files"
+  fi
+}
+
 install_dotfiles () {
   info 'installing dotfiles'
 
   pushd "$HOME/.dotfiles"
   for pkg in $(ls -d */ | rg -v "bootstrap|script|system|bin|functions|git")
   do
-    stow --ignore='path.*' --ignore='completion.*' "$pkg"
+    pkg="${pkg%/}"
+
+    user "Configure '$pkg'? [Y/n]"
+    read -e -r answer
+
+    if [[ "$answer" =~ ^[Nn]$ ]]
+    then
+      info "skipped '$pkg'"
+      continue
+    fi
+
+    stow_package "$pkg"
   done
   popd
 }
