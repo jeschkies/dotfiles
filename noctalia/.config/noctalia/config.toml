@@ -12,3 +12,48 @@ community_ids = ["spicetify"]
 [plugins]
 enabled = ["davemhammer/tailscale"]
 auto_update = "all"
+
+[bar.default]
+position = "top"
+
+# Left section
+start = [
+    "launcher",
+    "wallpaper",
+    "workspaces"
+]
+
+# Center section
+center = [
+    "clock"
+]
+
+# Right section
+end = [
+    "media",
+    "updates",
+    "tray",
+    "notifications",
+    "clipboard",
+    "network",
+    "davemhammer/tailscale:status",
+    "bluetooth",
+    "volume",
+    "keyboard_layout",
+    "control-center",
+    "session"
+]
+
+[widget.keyboard_layout]
+show_glyph = true
+show_label = true
+display = "short"
+
+[widget.keyboard_layout.actions]
+left = "exec niri msg action switch-layout next"
+
+[widget.network]
+show_label = false
+
+[widget."davemhammer/tailscale:status"]
+show_counts = false
