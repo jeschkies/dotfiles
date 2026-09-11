@@ -57,3 +57,6 @@ show_label = false
 
 [widget."davemhammer/tailscale:status"]
 show_counts = false
+
+[plugin."davemhammer/tailscale"]
+notify_on_peer_change = false
