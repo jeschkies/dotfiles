@@ -10,5 +10,5 @@ atom.symlink/themes
 
 git/gitconfig.local.symlink
 
-nvim/.config/nvim/plugin/
-nvim/.config/nvim/lua/.luarc.json
+neovim/.config/nvim/plugin/
+neovim/.config/nvim/lua/.luarc.json

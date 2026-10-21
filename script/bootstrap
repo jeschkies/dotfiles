@@ -61,10 +61,18 @@ stow_package () {
     return
   fi
 
+  # Cover every conflict message stow can emit (see Stow.pm). Missing one means
+  # falling through to the "could not be parsed" branch below instead of
+  # offering to override.
   local conflicts
   conflicts=$(echo "$dry_run_output" | sed -n \
     -e 's/.*over existing target \(.*\) since.*/\1/p' \
-    -e 's/.*existing target is not owned by stow: \(.*\)/\1/p')
+    -e 's/.*over existing directory target \(.*\)/\1/p' \
+    -e 's/.*over existing non-directory target \(.*\)/\1/p' \
+    -e 's/.*existing target is not owned by stow: \(.*\)/\1/p' \
+    -e 's/.*existing target is neither a link nor a directory: \(.*\)/\1/p' \
+    -e 's/.*existing target is stowed to a different package: \(.*\) => .*/\1/p' \
+    | sort -u)
 
   if [ -z "$conflicts" ]
   then
@@ -113,19 +121,45 @@ install_dotfiles () {
   popd
 }
 
+load_brew_shellenv () {
+  # On a fresh install brew is not on PATH yet, so find it by prefix.
+  local prefix
+  for prefix in /opt/homebrew /usr/local
+  do
+    if [ -x "$prefix/bin/brew" ]
+    then
+      eval "$("$prefix/bin/brew" shellenv)"
+      return
+    fi
+  done
+
+  fail "homebrew was installed but no brew executable was found"
+}
+
+install_dependencies () {
+  info 'setting macOS defaults'
+  "$DOTFILES_ROOT/macos/set-defaults.sh"
+
+  info 'installing homebrew'
+  "$DOTFILES_ROOT/homebrew/install.sh"
+  load_brew_shellenv
+
+  info 'updating homebrew'
+  brew update
+
+  info 'running installers'
+  "$DOTFILES_ROOT/script/install"
+
+  success 'dependencies installed'
+}
+
 setup_gitconfig
 install_dotfiles
 
 # If we're on a Mac, let's install and setup homebrew.
 if [ "$(uname -s)" == "Darwin" ]
 then
-  info "installing dependencies"
-  if source bin/dot-up > /tmp/dotfiles-dot 2>&1
-  then
-    success "dependencies installed"
-  else
-    fail "error installing dependencies"
-  fi
+  install_dependencies
 fi
 
 echo ''
