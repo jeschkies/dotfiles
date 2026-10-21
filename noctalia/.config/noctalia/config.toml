@@ -5,6 +5,7 @@ builtin           = "Catppuccin"
 [theme.templates]
 enable_builtin_templates = true
 builtin_ids              = ["ghostty", "niri"]
+enabled_ids = ["obsidian"]
 
 [templates]
 community_ids = ["spicetify"]

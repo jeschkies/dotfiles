@@ -335,6 +335,8 @@ binds {
     Mod+Shift+Left  { move-column-left; }
     Mod+Shift+Right { move-column-right; }
 
+    Mod+F { maximize-column; }
+
     Print { spawn "noctalia" "msg" "screenshot-region"; }
     Shift+Print { spawn "noctalia" "msg" "screenshot-fullscreen"; }
 
