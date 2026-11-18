@@ -61,3 +61,6 @@ show_counts = false
 
 [plugin."davemhammer/tailscale"]
 notify_on_peer_change = false
+
+[audio]
+enable_notification_sounds = false
